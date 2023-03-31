@@ -1,19 +1,19 @@
-# @babel/helpers
+# @babel/plugin-proposal-json-strings
 
-> Collection of helper functions used by Babel transforms.
+> Escape U+2028 LINE SEPARATOR and U+2029 PARAGRAPH SEPARATOR in JS strings
 
-See our website [@babel/helpers](https://babeljs.io/docs/en/babel-helpers) for more information.
+See our website [@babel/plugin-proposal-json-strings](https://babeljs.io/docs/en/babel-plugin-proposal-json-strings) for more information.
 
 ## Install
 
 Using npm:
 
 ```sh
-npm install --save-dev @babel/helpers
+npm install --save-dev @babel/plugin-proposal-json-strings
 ```
 
 or using yarn:
 
 ```sh
-yarn add @babel/helpers --dev
+yarn add @babel/plugin-proposal-json-strings --dev
 ```
