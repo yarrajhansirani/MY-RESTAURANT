@@ -1,57 +1,84 @@
-# Selector Specificity
+argparse
+========
 
-[<img alt="npm version" src="https://img.shields.io/npm/v/@csstools/selector-specificity.svg" height="20">][npm-url]
-[<img alt="Build Status" src="https://github.com/csstools/postcss-plugins/workflows/test/badge.svg" height="20">][cli-url]
-[<img alt="Discord" src="https://shields.io/badge/Discord-5865F2?logo=discord&logoColor=white">][discord]
+[![Build Status](https://secure.travis-ci.org/nodeca/argparse.svg?branch=master)](http://travis-ci.org/nodeca/argparse)
+[![NPM version](https://img.shields.io/npm/v/argparse.svg)](https://www.npmjs.org/package/argparse)
 
-## Usage
+CLI arguments parser for node.js, with [sub-commands](https://docs.python.org/3.9/library/argparse.html#sub-commands) support. Port of python's [argparse](http://docs.python.org/dev/library/argparse.html) (version [3.9.0](https://github.com/python/cpython/blob/v3.9.0rc1/Lib/argparse.py)).
 
-Add [Selector Specificity] to your project:
+**Difference with original.**
 
-```bash
-npm install postcss @csstools/selector-specificity --save-dev
+- JS has no keyword arguments support.
+  -  Pass options instead: `new ArgumentParser({ description: 'example', add_help: true })`.
+- JS has no python's types `int`, `float`, ...
+  - Use string-typed names: `.add_argument('-b', { type: 'int', help: 'help' })`.
+- `%r` format specifier uses `require('util').inspect()`.
+
+More details in [doc](./doc).
+
+
+Example
+-------
+
+`test.js` file:
+
+```javascript
+#!/usr/bin/env node
+'use strict';
+
+const { ArgumentParser } = require('argparse');
+const { version } = require('./package.json');
+
+const parser = new ArgumentParser({
+  description: 'Argparse example'
+});
+
+parser.add_argument('-v', '--version', { action: 'version', version });
+parser.add_argument('-f', '--foo', { help: 'foo bar' });
+parser.add_argument('-b', '--bar', { help: 'bar foo' });
+parser.add_argument('--baz', { help: 'baz bar' });
+
+console.dir(parser.parse_args());
 ```
 
-```js
-import parser from 'postcss-selector-parser';
-import { selectorSpecificity } from '@csstools/selector-specificity';
+Display help:
 
-const selectorAST = parser().astSync('#foo:has(> .foo)');
-const specificity = selectorSpecificity(selectorAST);
+```
+$ ./test.js -h
+usage: test.js [-h] [-v] [-f FOO] [-b BAR] [--baz BAZ]
 
-console.log(specificity.a); // 1
-console.log(specificity.b); // 1
-console.log(specificity.c); // 0
+Argparse example
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -v, --version      show program's version number and exit
+  -f FOO, --foo FOO  foo bar
+  -b BAR, --bar BAR  bar foo
+  --baz BAZ          baz bar
 ```
 
-_`selectorSpecificity` takes a single selector, not a list of selectors (not : `a, b, c`).
-To compare or otherwise manipulate lists of selectors you need to call `selectorSpecificity` on each part._
+Parse arguments:
 
-### Comparing
-
-The package exports a utility function to compare two specificities.
-
-```js
-import { selectorSpecificity, compare } from '@csstools/selector-specificity';
-
-const s1 = selectorSpecificity(ast1);
-const s2 = selectorSpecificity(ast2);
-compare(s1, s2); // -1 | 0 | 1
+```
+$ ./test.js -f=3 --bar=4 --baz 5
+{ foo: '3', bar: '4', baz: '5' }
 ```
 
-- if `s1 < s2` then `compare(s1, s2)` returns a negative number (`< 0`)
-- if `s1 > s2` then `compare(s1, s2)` returns a positive number (`> 0`)
-- if `s1 === s2` then `compare(s1, s2)` returns zero (`=== 0`)
 
-## Prior Art
+API docs
+--------
 
-- [keeganstreet/specificity](https://github.com/keeganstreet/specificity)
-- [bramus/specificity](https://github.com/bramus/specificity)
+Since this is a port with minimal divergence, there's no separate documentation.
+Use original one instead, with notes about difference.
 
-For CSSTools we always use `postcss-selector-parser` and want to calculate specificity from this AST.
+1. [Original doc](https://docs.python.org/3.9/library/argparse.html).
+2. [Original tutorial](https://docs.python.org/3.9/howto/argparse.html).
+3. [Difference with python](./doc).
 
-[cli-url]: https://github.com/csstools/postcss-plugins/actions/workflows/test.yml?query=workflow/test
-[discord]: https://discord.gg/bUadyRwkJS
-[npm-url]: https://www.npmjs.com/package/@csstools/selector-specificity
 
-[Selector Specificity]: https://github.com/csstools/postcss-plugins/tree/main/packages/selector-specificity
+argparse for enterprise
+-----------------------
+
+Available as part of the Tidelift Subscription
+
+The maintainers of argparse and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-argparse?utm_source=npm-argparse&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
