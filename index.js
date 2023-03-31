@@ -1,118 +1,93 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var helperPluginUtils = require('@babel/helper-plugin-utils');
-var transformTypeScript = require('@babel/plugin-transform-typescript');
-require('@babel/plugin-syntax-jsx');
-var transformModulesCommonJS = require('@babel/plugin-transform-modules-commonjs');
-var helperValidatorOption = require('@babel/helper-validator-option');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var transformTypeScript__default = /*#__PURE__*/_interopDefaultLegacy(transformTypeScript);
-var transformModulesCommonJS__default = /*#__PURE__*/_interopDefaultLegacy(transformModulesCommonJS);
-
-const v = new helperValidatorOption.OptionValidator("@babel/preset-typescript");
-function normalizeOptions(options = {}) {
-  let {
-    allowNamespaces = true,
-    jsxPragma,
-    onlyRemoveTypeImports
-  } = options;
-  const TopLevelOptions = {
-    ignoreExtensions: "ignoreExtensions",
-    allowNamespaces: "allowNamespaces",
-    disallowAmbiguousJSXLike: "disallowAmbiguousJSXLike",
-    jsxPragma: "jsxPragma",
-    jsxPragmaFrag: "jsxPragmaFrag",
-    onlyRemoveTypeImports: "onlyRemoveTypeImports",
-    optimizeConstEnums: "optimizeConstEnums",
-    allExtensions: "allExtensions",
-    isTSX: "isTSX"
-  };
-  const jsxPragmaFrag = v.validateStringOption(TopLevelOptions.jsxPragmaFrag, options.jsxPragmaFrag, "React.Fragment");
-  {
-    var allExtensions = v.validateBooleanOption(TopLevelOptions.allExtensions, options.allExtensions, false);
-    var isTSX = v.validateBooleanOption(TopLevelOptions.isTSX, options.isTSX, false);
-    if (isTSX) {
-      v.invariant(allExtensions, "isTSX:true requires allExtensions:true");
-    }
-  }
-  const ignoreExtensions = v.validateBooleanOption(TopLevelOptions.ignoreExtensions, options.ignoreExtensions, false);
-  const disallowAmbiguousJSXLike = v.validateBooleanOption(TopLevelOptions.disallowAmbiguousJSXLike, options.disallowAmbiguousJSXLike, false);
-  if (disallowAmbiguousJSXLike) {
-    {
-      v.invariant(allExtensions, "disallowAmbiguousJSXLike:true requires allExtensions:true");
-    }
-  }
-  const optimizeConstEnums = v.validateBooleanOption(TopLevelOptions.optimizeConstEnums, options.optimizeConstEnums, false);
-  const normalized = {
-    ignoreExtensions,
-    allowNamespaces,
-    disallowAmbiguousJSXLike,
-    jsxPragma,
-    jsxPragmaFrag,
-    onlyRemoveTypeImports,
-    optimizeConstEnums
-  };
-  {
-    normalized.allExtensions = allExtensions;
-    normalized.isTSX = isTSX;
-  }
-  return normalized;
-}
-
-var index = helperPluginUtils.declarePreset((api, opts) => {
-  api.assertVersion(7);
-  const {
-    allExtensions,
-    allowNamespaces,
-    disallowAmbiguousJSXLike,
-    isTSX,
-    jsxPragma,
-    jsxPragmaFrag,
-    onlyRemoveTypeImports,
-    optimizeConstEnums
-  } = normalizeOptions(opts);
-  const pluginOptions = disallowAmbiguousJSXLike => ({
-    allowDeclareFields: opts.allowDeclareFields,
-    allowNamespaces,
-    disallowAmbiguousJSXLike,
-    jsxPragma,
-    jsxPragmaFrag,
-    onlyRemoveTypeImports,
-    optimizeConstEnums
-  });
-  const getPlugins = (isTSX, disallowAmbiguousJSXLike) => {
-    {
-      return [[transformTypeScript__default["default"], Object.assign({
-        isTSX
-      }, pluginOptions(disallowAmbiguousJSXLike))]];
-    }
-  };
-  return {
-    overrides: allExtensions ? [{
-      plugins: getPlugins(isTSX, disallowAmbiguousJSXLike)
-    }] : [{
-      test: /\.ts$/,
-      plugins: getPlugins(false, false)
-    }, {
-      test: /\.mts$/,
-      sourceType: "module",
-      plugins: getPlugins(false, true)
-    }, {
-      test: /\.cts$/,
-      sourceType: "unambiguous",
-      plugins: [[transformModulesCommonJS__default["default"], {
-        allowTopLevelThis: true
-      }], [transformTypeScript__default["default"], pluginOptions(true)]]
-    }, {
-      test: /\.tsx$/,
-      plugins: getPlugins(true, false)
-    }]
-  };
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+Object.defineProperty(exports, "Hub", {
+  enumerable: true,
+  get: function () {
+    return _hub.default;
+  }
+});
+Object.defineProperty(exports, "NodePath", {
+  enumerable: true,
+  get: function () {
+    return _path.default;
+  }
+});
+Object.defineProperty(exports, "Scope", {
+  enumerable: true,
+  get: function () {
+    return _scope.default;
+  }
+});
+exports.visitors = exports.default = void 0;
+var visitors = require("./visitors");
+exports.visitors = visitors;
+var _t = require("@babel/types");
+var cache = require("./cache");
+var _traverseNode = require("./traverse-node");
+var _path = require("./path");
+var _scope = require("./scope");
+var _hub = require("./hub");
+const {
+  VISITOR_KEYS,
+  removeProperties,
+  traverseFast
+} = _t;
+function traverse(parent, opts = {}, scope, state, parentPath) {
+  if (!parent) return;
+  if (!opts.noScope && !scope) {
+    if (parent.type !== "Program" && parent.type !== "File") {
+      throw new Error("You must pass a scope and parentPath unless traversing a Program/File. " + `Instead of that you tried to traverse a ${parent.type} node without ` + "passing scope and parentPath.");
+    }
+  }
+  if (!VISITOR_KEYS[parent.type]) {
+    return;
+  }
+  visitors.explode(opts);
+  (0, _traverseNode.traverseNode)(parent, opts, scope, state, parentPath);
+}
+var _default = traverse;
+exports.default = _default;
+traverse.visitors = visitors;
+traverse.verify = visitors.verify;
+traverse.explode = visitors.explode;
+traverse.cheap = function (node, enter) {
+  traverseFast(node, enter);
+  return;
+};
+traverse.node = function (node, opts, scope, state, path, skipKeys) {
+  (0, _traverseNode.traverseNode)(node, opts, scope, state, path, skipKeys);
+};
+traverse.clearNode = function (node, opts) {
+  removeProperties(node, opts);
+  cache.path.delete(node);
+};
+traverse.removeProperties = function (tree, opts) {
+  traverseFast(tree, traverse.clearNode, opts);
+  return tree;
+};
+function hasDenylistedType(path, state) {
+  if (path.node.type === state.type) {
+    state.has = true;
+    path.stop();
+  }
+}
+traverse.hasType = function (tree, type, denylistTypes) {
+  if (denylistTypes != null && denylistTypes.includes(tree.type)) return false;
+  if (tree.type === type) return true;
+  const state = {
+    has: false,
+    type: type
+  };
+  traverse(tree, {
+    noScope: true,
+    denylist: denylistTypes,
+    enter: hasDenylistedType
+  }, null, state);
+  return state.has;
+};
+traverse.cache = cache;
 
-exports["default"] = index;
 //# sourceMappingURL=index.js.map
