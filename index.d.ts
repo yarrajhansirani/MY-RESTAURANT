@@ -1,5 +1,9 @@
 import type { PluginCreator } from 'postcss';
-declare const creator: PluginCreator<{
-    preserve: boolean;
-}>;
+declare type pluginOptions = {
+    preserve?: boolean;
+    onComplexSelector?: 'warning';
+    onPseudoElement?: 'warning';
+    specificityMatchingName?: string;
+};
+declare const creator: PluginCreator<pluginOptions>;
 export default creator;

@@ -1,86 +1,251 @@
-# PostCSS Font Format [<img src="https://postcss.github.io/postcss/logo.svg" alt="PostCSS Logo" width="90" height="90" align="right">][postcss]
+# PostCSS Is Pseudo [<img src="https://postcss.github.io/postcss/logo.svg" alt="PostCSS" width="90" height="90" align="right">][postcss]
 
-[<img alt="npm version" src="https://img.shields.io/npm/v/@csstools/postcss-font-format-keywords.svg" height="20">][npm-url]
-[<img alt="CSS Standard Status" src="https://cssdb.org/images/badges/font-format-keywords.svg" height="20">][css-url]
+[![NPM Version][npm-img]][npm-url]
+[![CSS Standard Status][css-img]][css-url]
 [<img alt="Build Status" src="https://github.com/csstools/postcss-plugins/workflows/test/badge.svg" height="20">][cli-url]
 [<img alt="Discord" src="https://shields.io/badge/Discord-5865F2?logo=discord&logoColor=white">][discord]
 
-[PostCSS Font Format Keywords] lets you specify font formats as keywords, following the [CSS Fonts] specification.
+[PostCSS Is Pseudo Class] lets you use the `:is` pseudo class function, following the
+[CSS Selector] specification.
 
 ```pcss
-@font-face {
-  src: url(file.woff2) format(woff2);
-}
-
-/* becomes */
-
-@font-face {
-  src: url(file.woff2) format("woff2");
+:is(input, button):is(:hover, :focus) {
+	order: 1;
 }
 ```
 
-_See prior work by [valtlai](https://github.com/valtlai) here [postcss-font-format-keywords](https://github.com/valtlai/postcss-font-format-keywords)
-To ensure long term maintenance and to provide the needed features this plugin was recreated based on valtlai's work._
+Becomes :
+
+```pcss
+input:hover {
+	order: 1;
+}
+input:focus {
+	order: 1;
+}
+button:hover {
+	order: 1;
+}
+button:focus {
+	order: 1;
+}
+```
 
 ## Usage
 
-Add [PostCSS Font Format Keywords] to your project:
+Add [PostCSS Is Pseudo Class] to your project:
 
 ```bash
-npm install postcss @csstools/postcss-font-format-keywords --save-dev
+npm install @csstools/postcss-is-pseudo-class --save-dev
 ```
 
-Use it as a [PostCSS] plugin:
+Use [PostCSS Is Pseudo Class] as a [PostCSS] plugin:
 
 ```js
-const postcss = require('postcss');
-const postcssFontFormatKeywords = require('@csstools/postcss-font-format-keywords');
+import postcss from 'postcss';
+import postcssIsPseudoClass from '@csstools/postcss-is-pseudo-class';
 
 postcss([
-  postcssFontFormatKeywords(/* pluginOptions */)
+  postcssIsPseudoClass(/* pluginOptions */)
 ]).process(YOUR_CSS /*, processOptions */);
 ```
 
-[PostCSS Font Format Keywords] runs in all Node environments, with special
-instructions for:
+[PostCSS Is Pseudo Class] runs in all Node environments, with special instructions for:
 
-| [Node](INSTALL.md#node) | [PostCSS CLI](INSTALL.md#postcss-cli) | [Webpack](INSTALL.md#webpack) | [Create React App](INSTALL.md#create-react-app) | [Gulp](INSTALL.md#gulp) | [Grunt](INSTALL.md#grunt) |
-| --- | --- | --- | --- | --- | --- |
+| [Node](INSTALL.md#node) | [Webpack](INSTALL.md#webpack) | [Create React App](INSTALL.md#create-react-app) | [Gulp](INSTALL.md#gulp) | [Grunt](INSTALL.md#grunt) |
+| --- | --- | --- | --- | --- |
 
 ## Options
 
 ### preserve
 
-The `preserve` option determines whether the original source
+The `preserve` option determines whether the original notation
 is preserved. By default, it is not preserved.
 
 ```js
-postcssFontFormatKeywords({ preserve: true })
+postcss([
+  postcssIsPseudoClass({ preserve: true })
+]).process(YOUR_CSS /*, processOptions */);
 ```
 
 ```pcss
-@font-face {
-  src: url(file.woff2) format(woff2);
+:is(input, button):is(:hover, :focus) {
+	order: 1;
+}
+```
+
+Becomes :
+
+```pcss
+input:hover {
+	order: 1;
+}
+input:focus {
+	order: 1;
+}
+button:hover {
+	order: 1;
+}
+button:focus {
+	order: 1;
+}
+:is(input, button):is(:hover, :focus) {
+	order: 1;
+}
+```
+
+### specificityMatchingName
+
+The `specificityMatchingName` option allows you to change to selector used to adjust specificity.
+The default value is `does-not-exist`.
+If this is an actual class, id or tag name in your code, you will need to set a different option here.
+
+See how `:not` is used to modify [specificity](#specificity).
+
+```js
+postcss([
+  postcssIsPseudoClass({ specificityMatchingName: 'something-random' })
+]).process(YOUR_CSS /*, processOptions */);
+```
+
+```pcss
+:is(.button, button):hover {
+	order: 7;
+}
+```
+
+Becomes :
+
+```pcss
+.button:hover {
+	order: 7;
+}
+
+button:not(.something-random):hover {
+	order: 7;
+}
+```
+
+### onComplexSelector
+
+Warn on complex selectors in `:is` pseudo class functions.
+
+```js
+postcss([
+  postcssIsPseudoClass({ onComplexSelector: 'warning' })
+]).process(YOUR_CSS /*, processOptions */);
+```
+
+### onPseudoElement
+
+Warn when pseudo elements are used in `:is` pseudo class functions.
+
+⚠️ Pseudo elements are always invalid and will be transformed to `::-csstools-invalid-<pseudo-name>`.
+
+```js
+postcss([
+  postcssIsPseudoClass({ onPseudoElement: 'warning' })
+]).process(YOUR_CSS /*, processOptions */);
+```
+
+```css
+:is(::after):hover {
+	order: 1.0;
 }
 
 /* becomes */
 
-@font-face {
-  src: url(file.woff2) format("woff2");
-  src: url(file.woff2) format(woff2);
+::-csstools-invalid-after:hover {
+	order: 1.0;
 }
 ```
 
-[postcss]: https://github.com/postcss/postcss
+## ⚠️ Known shortcomings
+
+### Specificity
+
+`:is` takes the specificity of the most specific list item.
+We can increase specificity with `:not` selectors, but we can't decrease it.
+
+Converted selectors are ensured to have the same specificity as `:is` for the most important bit.
+Less important bits can have higher specificity that `:is`.
+
+Before :
+
+[specificity: 0, 2, 0](https://polypane.app/css-specificity-calculator/#selector=%3Ais(%3Ahover%2C%20%3Afocus)%3Ais(.button%2C%20button))
+
+```pcss
+:is(:hover, :focus):is(.button, button) {
+	order: 7;
+}
+```
+
+After :
+
+```pcss
+/* specificity: [0, 2, 0] */
+.button:hover {
+	order: 7;
+}
+
+/* specificity: [0, 2, 1] */
+/* last bit is higher than it should be, but middle bit matches */
+button:not(.does-not-exist):hover {
+	order: 7;
+}
+
+/* specificity: [0, 2, 0] */
+.button:focus {
+	order: 7;
+}
+
+/* specificity: [0, 2, 1] */
+/* last bit is higher than it should be, but middle bit matches */
+button:not(.does-not-exist):focus {
+	order: 7;
+}
+```
+
+### Complex selectors
+
+Before :
+
+
+```pcss
+:is(.alpha > .beta) ~ :is(:focus > .beta) {
+	order: 2;
+}
+```
+
+After :
+
+```pcss
+.alpha > .beta ~ :focus > .beta {
+	order: 2;
+}
+```
+
+_this is a different selector than expected as `.beta ~ :focus` matches `.beta` followed by `:focus`._<br>
+_avoid these cases._<br>
+_writing the selector without `:is()` is advised here_
+
+```pcss
+/* without is */
+.alpha:focus > .beta ~ .beta {
+	order: 2;
+}
+```
+
+If you have a specific pattern you can open an issue to discuss it.
+We can detect and transform some cases but can't generalize them into a single solution that tackles all of them. 
 
 [cli-url]: https://github.com/csstools/postcss-plugins/actions/workflows/test.yml?query=workflow/test
-[css-url]: https://cssdb.org/#font-format-keywords
+[css-img]: https://cssdb.org/images/badges/is-pseudo-class.svg
+[css-url]: https://cssdb.org/#is-pseudo-class
 [discord]: https://discord.gg/bUadyRwkJS
-[npm-url]: https://www.npmjs.com/package/@csstools/postcss-font-format-keywords
+[npm-img]: https://img.shields.io/npm/v/@csstools/postcss-is-pseudo-class.svg
+[npm-url]: https://www.npmjs.com/package/@csstools/postcss-is-pseudo-class
 
-[CSS Fonts]: https://www.w3.org/TR/css-fonts-4/#font-format-values
-[Gulp PostCSS]: https://github.com/postcss/gulp-postcss
-[Grunt PostCSS]: https://github.com/nDmitry/grunt-postcss
+[CSS Selector]: https://www.w3.org/TR/selectors-4/#matches
 [PostCSS]: https://github.com/postcss/postcss
-[PostCSS Loader]: https://github.com/postcss/postcss-loader
-[PostCSS Font Format Keywords]: https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-font-format-keywords
+[PostCSS Is Pseudo Class]: https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-is-pseudo-class
