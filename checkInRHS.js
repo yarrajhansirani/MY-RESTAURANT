@@ -1,14 +1,6 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _checkInRHS;
+var _typeof = require("./typeof.js")["default"];
 function _checkInRHS(value) {
-  if (Object(value) !== value) {
-    throw TypeError("right-hand side of 'in' should be an object, got " + (value !== null ? typeof value : "null"));
-  }
+  if (Object(value) !== value) throw TypeError("right-hand side of 'in' should be an object, got " + (null !== value ? _typeof(value) : "null"));
   return value;
 }
-
-//# sourceMappingURL=checkInRHS.js.map
+module.exports = _checkInRHS, module.exports.__esModule = true, module.exports["default"] = module.exports;

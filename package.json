@@ -1,28 +1,43 @@
 {
-  "name": "semver",
-  "version": "6.3.0",
-  "description": "The semantic version parser used by npm.",
-  "main": "semver.js",
+  "name": "@babel/regjsgen",
+  "version": "0.8.0",
+  "description": "Generate regular expressions from regjsparser’s AST.",
+  "homepage": "https://github.com/bnjmnt4n/regjsgen",
+  "main": "regjsgen.js",
+  "keywords": [
+    "ast",
+    "generate",
+    "regex",
+    "regexp",
+    "regular expressions"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Benjamin Tan",
+    "url": "https://ofcr.se/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bnjmnt4n/regjsgen.git"
+  },
+  "bugs": "https://github.com/bnjmnt4n/regjsgen/issues",
+  "files": [
+    "LICENSE-MIT.txt",
+    "regjsgen.js"
+  ],
   "scripts": {
-    "test": "tap",
-    "preversion": "npm test",
-    "postversion": "npm publish",
-    "postpublish": "git push origin --follow-tags"
+    "test": "node tests/tests.js",
+    "coverage": "nyc --reporter=html npm test",
+    "report-coverage": "nyc --reporter=lcov npm test && codecov",
+    "update-fixtures": "node tests/update-fixtures.js"
   },
   "devDependencies": {
-    "tap": "^14.3.1"
+    "codecov": "^3.8.3",
+    "nyc": "^15.1.0",
+    "regjsparser": "^0.9.1",
+    "request": "^2.88.2"
   },
-  "license": "ISC",
-  "repository": "https://github.com/npm/node-semver",
-  "bin": {
-    "semver": "./bin/semver.js"
-  },
-  "files": [
-    "bin",
-    "range.bnf",
-    "semver.js"
-  ],
-  "tap": {
-    "check-coverage": true
+  "publishConfig": {
+    "access": "public"
   }
 }

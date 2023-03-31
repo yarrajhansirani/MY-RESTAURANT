@@ -1,21 +1,12 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = applyDecs2301;
-var _checkInRHS = require("checkInRHS");
+var _typeof = require("./typeof.js")["default"];
+var checkInRHS = require("./checkInRHS.js");
 function createAddInitializerMethod(initializers, decoratorFinishedRef) {
-  return function addInitializer(initializer) {
-    assertNotFinished(decoratorFinishedRef, "addInitializer");
-    assertCallable(initializer, "An initializer");
-    initializers.push(initializer);
+  return function (initializer) {
+    assertNotFinished(decoratorFinishedRef, "addInitializer"), assertCallable(initializer, "An initializer"), initializers.push(initializer);
   };
 }
 function assertInstanceIfPrivate(has, target) {
-  if (!has(target)) {
-    throw new TypeError("Attempted to access private element on non-instance");
-  }
+  if (!has(target)) throw new TypeError("Attempted to access private element on non-instance");
 }
 function memberDec(dec, name, desc, initializers, kind, isStatic, isPrivate, value, hasPrivateBrand) {
   var kindStr;
@@ -35,60 +26,37 @@ function memberDec(dec, name, desc, initializers, kind, isStatic, isPrivate, val
     default:
       kindStr = "field";
   }
-  var ctx = {
-    kind: kindStr,
-    name: isPrivate ? "#" + name : name,
-    static: isStatic,
-    private: isPrivate
-  };
-  var decoratorFinishedRef = {
-    v: false
-  };
-  if (kind !== 0) {
-    ctx.addInitializer = createAddInitializerMethod(initializers, decoratorFinishedRef);
-  }
-  var get, set;
-  if (!isPrivate && (kind === 0 || kind === 2)) {
-    get = function (target) {
-      return target[name];
+  var get,
+    set,
+    ctx = {
+      kind: kindStr,
+      name: isPrivate ? "#" + name : name,
+      "static": isStatic,
+      "private": isPrivate
+    },
+    decoratorFinishedRef = {
+      v: !1
     };
-    if (kind === 0) {
-      set = function (target, v) {
-        target[name] = v;
-      };
+  if (0 !== kind && (ctx.addInitializer = createAddInitializerMethod(initializers, decoratorFinishedRef)), isPrivate || 0 !== kind && 2 !== kind) {
+    if (2 === kind) get = function get(target) {
+      return assertInstanceIfPrivate(hasPrivateBrand, target), desc.value;
+    };else {
+      var t = 0 === kind || 1 === kind;
+      (t || 3 === kind) && (get = isPrivate ? function (target) {
+        return assertInstanceIfPrivate(hasPrivateBrand, target), desc.get.call(target);
+      } : function (target) {
+        return desc.get.call(target);
+      }), (t || 4 === kind) && (set = isPrivate ? function (target, value) {
+        assertInstanceIfPrivate(hasPrivateBrand, target), desc.set.call(target, value);
+      } : function (target, value) {
+        desc.set.call(target, value);
+      });
     }
-  } else if (kind === 2) {
-    get = function (target) {
-      assertInstanceIfPrivate(hasPrivateBrand, target);
-      return desc.value;
-    };
-  } else {
-    var t = kind === 0 || kind === 1;
-    if (t || kind === 3) {
-      if (isPrivate) {
-        get = function (target) {
-          assertInstanceIfPrivate(hasPrivateBrand, target);
-          return desc.get.call(target);
-        };
-      } else {
-        get = function (target) {
-          return desc.get.call(target);
-        };
-      }
-    }
-    if (t || kind === 4) {
-      if (isPrivate) {
-        set = function (target, value) {
-          assertInstanceIfPrivate(hasPrivateBrand, target);
-          desc.set.call(target, value);
-        };
-      } else {
-        set = function (target, value) {
-          desc.set.call(target, value);
-        };
-      }
-    }
-  }
+  } else get = function get(target) {
+    return target[name];
+  }, 0 === kind && (set = function set(target, v) {
+    target[name] = v;
+  });
   var has = isPrivate ? hasPrivateBrand.bind() : function (target) {
     return name in target;
   };
@@ -106,44 +74,23 @@ function memberDec(dec, name, desc, initializers, kind, isStatic, isPrivate, val
   try {
     return dec(value, ctx);
   } finally {
-    decoratorFinishedRef.v = true;
+    decoratorFinishedRef.v = !0;
   }
 }
 function assertNotFinished(decoratorFinishedRef, fnName) {
-  if (decoratorFinishedRef.v) {
-    throw new Error("attempted to call " + fnName + " after decoration was finished");
-  }
+  if (decoratorFinishedRef.v) throw new Error("attempted to call " + fnName + " after decoration was finished");
 }
 function assertCallable(fn, hint) {
-  if (typeof fn !== "function") {
-    throw new TypeError(hint + " must be a function");
-  }
+  if ("function" != typeof fn) throw new TypeError(hint + " must be a function");
 }
 function assertValidReturnValue(kind, value) {
-  var type = typeof value;
-  if (kind === 1) {
-    if (type !== "object" || value === null) {
-      throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
-    }
-    if (value.get !== undefined) {
-      assertCallable(value.get, "accessor.get");
-    }
-    if (value.set !== undefined) {
-      assertCallable(value.set, "accessor.set");
-    }
-    if (value.init !== undefined) {
-      assertCallable(value.init, "accessor.init");
-    }
-  } else if (type !== "function") {
+  var type = _typeof(value);
+  if (1 === kind) {
+    if ("object" !== type || null === value) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
+    void 0 !== value.get && assertCallable(value.get, "accessor.get"), void 0 !== value.set && assertCallable(value.set, "accessor.set"), void 0 !== value.init && assertCallable(value.init, "accessor.init");
+  } else if ("function" !== type) {
     var hint;
-    if (kind === 0) {
-      hint = "field";
-    } else if (kind === 10) {
-      hint = "class";
-    } else {
-      hint = "method";
-    }
-    throw new TypeError(hint + " decorators must return a function or void 0");
+    throw hint = 0 === kind ? "field" : 10 === kind ? "class" : "method", new TypeError(hint + " decorators must return a function or void 0");
   }
 }
 function curryThis1(fn) {
@@ -157,220 +104,95 @@ function curryThis2(fn) {
   };
 }
 function applyMemberDec(ret, base, decInfo, name, kind, isStatic, isPrivate, initializers, hasPrivateBrand) {
-  var decs = decInfo[0];
-  var desc, init, value;
-  if (isPrivate) {
-    if (kind === 0 || kind === 1) {
-      desc = {
-        get: curryThis1(decInfo[3]),
-        set: curryThis2(decInfo[4])
-      };
-    } else {
-      if (kind === 3) {
-        desc = {
-          get: decInfo[3]
-        };
-      } else if (kind === 4) {
-        desc = {
-          set: decInfo[3]
-        };
-      } else {
-        desc = {
-          value: decInfo[3]
-        };
-      }
-    }
-  } else if (kind !== 0) {
-    desc = Object.getOwnPropertyDescriptor(base, name);
+  var desc,
+    init,
+    value,
+    newValue,
+    get,
+    set,
+    decs = decInfo[0];
+  if (isPrivate ? desc = 0 === kind || 1 === kind ? {
+    get: curryThis1(decInfo[3]),
+    set: curryThis2(decInfo[4])
+  } : 3 === kind ? {
+    get: decInfo[3]
+  } : 4 === kind ? {
+    set: decInfo[3]
+  } : {
+    value: decInfo[3]
+  } : 0 !== kind && (desc = Object.getOwnPropertyDescriptor(base, name)), 1 === kind ? value = {
+    get: desc.get,
+    set: desc.set
+  } : 2 === kind ? value = desc.value : 3 === kind ? value = desc.get : 4 === kind && (value = desc.set), "function" == typeof decs) void 0 !== (newValue = memberDec(decs, name, desc, initializers, kind, isStatic, isPrivate, value, hasPrivateBrand)) && (assertValidReturnValue(kind, newValue), 0 === kind ? init = newValue : 1 === kind ? (init = newValue.init, get = newValue.get || value.get, set = newValue.set || value.set, value = {
+    get: get,
+    set: set
+  }) : value = newValue);else for (var i = decs.length - 1; i >= 0; i--) {
+    var newInit;
+    if (void 0 !== (newValue = memberDec(decs[i], name, desc, initializers, kind, isStatic, isPrivate, value, hasPrivateBrand))) assertValidReturnValue(kind, newValue), 0 === kind ? newInit = newValue : 1 === kind ? (newInit = newValue.init, get = newValue.get || value.get, set = newValue.set || value.set, value = {
+      get: get,
+      set: set
+    }) : value = newValue, void 0 !== newInit && (void 0 === init ? init = newInit : "function" == typeof init ? init = [init, newInit] : init.push(newInit));
   }
-  if (kind === 1) {
-    value = {
-      get: desc.get,
-      set: desc.set
-    };
-  } else if (kind === 2) {
-    value = desc.value;
-  } else if (kind === 3) {
-    value = desc.get;
-  } else if (kind === 4) {
-    value = desc.set;
-  }
-  var newValue, get, set;
-  if (typeof decs === "function") {
-    newValue = memberDec(decs, name, desc, initializers, kind, isStatic, isPrivate, value, hasPrivateBrand);
-    if (newValue !== void 0) {
-      assertValidReturnValue(kind, newValue);
-      if (kind === 0) {
-        init = newValue;
-      } else if (kind === 1) {
-        init = newValue.init;
-        get = newValue.get || value.get;
-        set = newValue.set || value.set;
-        value = {
-          get: get,
-          set: set
-        };
-      } else {
-        value = newValue;
-      }
-    }
-  } else {
-    for (var i = decs.length - 1; i >= 0; i--) {
-      var dec = decs[i];
-      newValue = memberDec(dec, name, desc, initializers, kind, isStatic, isPrivate, value, hasPrivateBrand);
-      if (newValue !== void 0) {
-        assertValidReturnValue(kind, newValue);
-        var newInit;
-        if (kind === 0) {
-          newInit = newValue;
-        } else if (kind === 1) {
-          newInit = newValue.init;
-          get = newValue.get || value.get;
-          set = newValue.set || value.set;
-          value = {
-            get: get,
-            set: set
-          };
-        } else {
-          value = newValue;
-        }
-        if (newInit !== void 0) {
-          if (init === void 0) {
-            init = newInit;
-          } else if (typeof init === "function") {
-            init = [init, newInit];
-          } else {
-            init.push(newInit);
-          }
-        }
-      }
-    }
-  }
-  if (kind === 0 || kind === 1) {
-    if (init === void 0) {
-      init = function (instance, init) {
-        return init;
-      };
-    } else if (typeof init !== "function") {
+  if (0 === kind || 1 === kind) {
+    if (void 0 === init) init = function init(instance, _init) {
+      return _init;
+    };else if ("function" != typeof init) {
       var ownInitializers = init;
-      init = function (instance, init) {
-        var value = init;
-        for (var i = 0; i < ownInitializers.length; i++) {
-          value = ownInitializers[i].call(instance, value);
-        }
+      init = function init(instance, _init2) {
+        for (var value = _init2, i = 0; i < ownInitializers.length; i++) value = ownInitializers[i].call(instance, value);
         return value;
       };
     } else {
       var originalInitializer = init;
-      init = function (instance, init) {
-        return originalInitializer.call(instance, init);
+      init = function init(instance, _init3) {
+        return originalInitializer.call(instance, _init3);
       };
     }
     ret.push(init);
   }
-  if (kind !== 0) {
-    if (kind === 1) {
-      desc.get = value.get;
-      desc.set = value.set;
-    } else if (kind === 2) {
-      desc.value = value;
-    } else if (kind === 3) {
-      desc.get = value;
-    } else if (kind === 4) {
-      desc.set = value;
-    }
-    if (isPrivate) {
-      if (kind === 1) {
-        ret.push(function (instance, args) {
-          return value.get.call(instance, args);
-        });
-        ret.push(function (instance, args) {
-          return value.set.call(instance, args);
-        });
-      } else if (kind === 2) {
-        ret.push(value);
-      } else {
-        ret.push(function (instance, args) {
-          return value.call(instance, args);
-        });
-      }
-    } else {
-      Object.defineProperty(base, name, desc);
-    }
-  }
+  0 !== kind && (1 === kind ? (desc.get = value.get, desc.set = value.set) : 2 === kind ? desc.value = value : 3 === kind ? desc.get = value : 4 === kind && (desc.set = value), isPrivate ? 1 === kind ? (ret.push(function (instance, args) {
+    return value.get.call(instance, args);
+  }), ret.push(function (instance, args) {
+    return value.set.call(instance, args);
+  })) : 2 === kind ? ret.push(value) : ret.push(function (instance, args) {
+    return value.call(instance, args);
+  }) : Object.defineProperty(base, name, desc));
 }
 function applyMemberDecs(Class, decInfos, instanceBrand) {
-  var ret = [];
-  var protoInitializers;
-  var staticInitializers;
-  var staticBrand;
-  var existingProtoNonFields = new Map();
-  var existingStaticNonFields = new Map();
-  for (var i = 0; i < decInfos.length; i++) {
+  for (var protoInitializers, staticInitializers, staticBrand, ret = [], existingProtoNonFields = new Map(), existingStaticNonFields = new Map(), i = 0; i < decInfos.length; i++) {
     var decInfo = decInfos[i];
-    if (!Array.isArray(decInfo)) continue;
-    var kind = decInfo[1];
-    var name = decInfo[2];
-    var isPrivate = decInfo.length > 3;
-    var isStatic = kind >= 5;
-    var base;
-    var initializers;
-    var hasPrivateBrand = instanceBrand;
-    if (isStatic) {
-      base = Class;
-      kind = kind - 5;
-      if (kind !== 0) {
-        staticInitializers = staticInitializers || [];
-        initializers = staticInitializers;
+    if (Array.isArray(decInfo)) {
+      var base,
+        initializers,
+        kind = decInfo[1],
+        name = decInfo[2],
+        isPrivate = decInfo.length > 3,
+        isStatic = kind >= 5,
+        hasPrivateBrand = instanceBrand;
+      if (isStatic ? (base = Class, 0 !== (kind -= 5) && (initializers = staticInitializers = staticInitializers || []), isPrivate && !staticBrand && (staticBrand = function staticBrand(_) {
+        return checkInRHS(_) === Class;
+      }), hasPrivateBrand = staticBrand) : (base = Class.prototype, 0 !== kind && (initializers = protoInitializers = protoInitializers || [])), 0 !== kind && !isPrivate) {
+        var existingNonFields = isStatic ? existingStaticNonFields : existingProtoNonFields,
+          existingKind = existingNonFields.get(name) || 0;
+        if (!0 === existingKind || 3 === existingKind && 4 !== kind || 4 === existingKind && 3 !== kind) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + name);
+        !existingKind && kind > 2 ? existingNonFields.set(name, kind) : existingNonFields.set(name, !0);
       }
-      if (isPrivate && !staticBrand) {
-        staticBrand = function (_) {
-          return _checkInRHS(_) === Class;
-        };
-      }
-      hasPrivateBrand = staticBrand;
-    } else {
-      base = Class.prototype;
-      if (kind !== 0) {
-        protoInitializers = protoInitializers || [];
-        initializers = protoInitializers;
-      }
+      applyMemberDec(ret, base, decInfo, name, kind, isStatic, isPrivate, initializers, hasPrivateBrand);
     }
-    if (kind !== 0 && !isPrivate) {
-      var existingNonFields = isStatic ? existingStaticNonFields : existingProtoNonFields;
-      var existingKind = existingNonFields.get(name) || 0;
-      if (existingKind === true || existingKind === 3 && kind !== 4 || existingKind === 4 && kind !== 3) {
-        throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + name);
-      } else if (!existingKind && kind > 2) {
-        existingNonFields.set(name, kind);
-      } else {
-        existingNonFields.set(name, true);
-      }
-    }
-    applyMemberDec(ret, base, decInfo, name, kind, isStatic, isPrivate, initializers, hasPrivateBrand);
   }
-  pushInitializers(ret, protoInitializers);
-  pushInitializers(ret, staticInitializers);
-  return ret;
+  return pushInitializers(ret, protoInitializers), pushInitializers(ret, staticInitializers), ret;
 }
 function pushInitializers(ret, initializers) {
-  if (initializers) {
-    ret.push(function (instance) {
-      for (var i = 0; i < initializers.length; i++) {
-        initializers[i].call(instance);
-      }
-      return instance;
-    });
-  }
+  initializers && ret.push(function (instance) {
+    for (var i = 0; i < initializers.length; i++) initializers[i].call(instance);
+    return instance;
+  });
 }
 function applyClassDecs(targetClass, classDecs) {
   if (classDecs.length > 0) {
-    var initializers = [];
-    var newClass = targetClass;
-    var name = targetClass.name;
-    for (var i = classDecs.length - 1; i >= 0; i--) {
+    for (var initializers = [], newClass = targetClass, name = targetClass.name, i = classDecs.length - 1; i >= 0; i--) {
       var decoratorFinishedRef = {
-        v: false
+        v: !1
       };
       try {
         var nextNewClass = classDecs[i](newClass, {
@@ -379,17 +201,12 @@ function applyClassDecs(targetClass, classDecs) {
           addInitializer: createAddInitializerMethod(initializers, decoratorFinishedRef)
         });
       } finally {
-        decoratorFinishedRef.v = true;
+        decoratorFinishedRef.v = !0;
       }
-      if (nextNewClass !== undefined) {
-        assertValidReturnValue(10, nextNewClass);
-        newClass = nextNewClass;
-      }
+      void 0 !== nextNewClass && (assertValidReturnValue(10, nextNewClass), newClass = nextNewClass);
     }
     return [newClass, function () {
-      for (var i = 0; i < initializers.length; i++) {
-        initializers[i].call(newClass);
-      }
+      for (var i = 0; i < initializers.length; i++) initializers[i].call(newClass);
     }];
   }
 }
@@ -401,5 +218,4 @@ function applyDecs2301(targetClass, memberDecs, classDecs, instanceBrand) {
     }
   };
 }
-
-//# sourceMappingURL=applyDecs2301.js.map
+module.exports = applyDecs2301, module.exports.__esModule = true, module.exports["default"] = module.exports;
