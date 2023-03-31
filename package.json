@@ -1,60 +1,40 @@
 {
-  "name": "@adobe/css-tools",
-  "version": "4.2.0",
-  "description": "CSS parser / stringifier",
-  "main": "dist/umd/cssTools.js",
-  "module": "dist/cjs/cssTools.js",
-  "exports": {
-    "import": "./dist/esm/index.js",
-    "require": "./dist/cjs/cssTools.js"
-  },
-  "types": "dist/cjs/index.d.ts",
-  "files": [
-    "dist",
-    "Readme.md"
-  ],
-  "devDependencies": {
-    "@types/benchmark": "^2.1.1",
-    "@types/bytes": "^3.1.1",
-    "@types/jest": "^28.1.1",
-    "@types/node": "^18.0.0",
-    "benchmark": "^2.1.4",
-    "bytes": "^3.1.0",
-    "gts": "^4.0.0",
-    "jest": "^28.1.1",
-    "ts-jest": "^28.0.4",
-    "ts-loader": "^9.3.0",
-    "ts-node": "^10.8.1",
-    "typescript": "^4.7.3",
-    "webpack": "^5.73.0",
-    "webpack-cli": "^5.0.1"
-  },
-  "scripts": {
-    "benchmark": "ts-node benchmark/index.ts",
-    "test": "jest",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "build": "npm run compile && npm run buildesm",
-    "buildesm": "tsc --project tsconfig.esm.json && node ./add_esm_import_extensions.mjs",
-    "compile": "set NODE_ENV=prod & webpack --mode production",
-    "fix": "gts fix",
-    "prepare": "npm run build",
-    "pretest": "npm run build",
-    "posttest": "npm run lint"
-  },
-  "author": "TJ Holowaychuk <tj@vision-media.ca>",
-  "contributors": [
-    "Jean-Philippe Zolesio <holblin@gmail.com>"
-  ],
+  "name": "@babel/compat-data",
+  "version": "7.21.4",
+  "author": "The Babel Team (https://babel.dev/team)",
   "license": "MIT",
+  "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adobe/css-tools.git"
+    "url": "https://github.com/babel/babel.git",
+    "directory": "packages/babel-compat-data"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "./plugins": "./plugins.js",
+    "./native-modules": "./native-modules.js",
+    "./corejs2-built-ins": "./corejs2-built-ins.js",
+    "./corejs3-shipped-proposals": "./corejs3-shipped-proposals.js",
+    "./overlapping-plugins": "./overlapping-plugins.js",
+    "./plugin-bugfixes": "./plugin-bugfixes.js"
+  },
+  "scripts": {
+    "build-data": "./scripts/download-compat-table.sh && node ./scripts/build-data.js && node ./scripts/build-modules-support.js && node ./scripts/build-bugfixes-targets.js"
   },
   "keywords": [
-    "css",
-    "parser",
-    "stringifier",
-    "stylesheet"
-  ]
+    "babel",
+    "compat-table",
+    "compat-data"
+  ],
+  "devDependencies": {
+    "@mdn/browser-compat-data": "^4.0.10",
+    "core-js-compat": "^3.25.1",
+    "electron-to-chromium": "^1.4.248"
+  },
+  "engines": {
+    "node": ">=6.9.0"
+  },
+  "type": "commonjs"
 }
