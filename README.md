@@ -1,19 +1,19 @@
-# @babel/generator
+# @babel/helper-create-class-features-plugin
 
-> Turns an AST into code.
+> Compile class public and private fields, private methods and decorators to ES6
 
-See our website [@babel/generator](https://babeljs.io/docs/en/babel-generator) for more information or the [issues](https://github.com/babel/babel/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22pkg%3A%20generator%22+is%3Aopen) associated with this package.
+See our website [@babel/helper-create-class-features-plugin](https://babeljs.io/docs/en/babel-helper-create-class-features-plugin) for more information.
 
 ## Install
 
 Using npm:
 
 ```sh
-npm install --save-dev @babel/generator
+npm install --save @babel/helper-create-class-features-plugin
 ```
 
 or using yarn:
 
 ```sh
-yarn add @babel/generator --dev
+yarn add @babel/helper-create-class-features-plugin
 ```
