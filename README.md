@@ -1,19 +1,19 @@
-# @babel/helper-optimise-call-expression
+# @babel/helpers
 
-> Helper function to optimise call expression
+> Collection of helper functions used by Babel transforms.
 
-See our website [@babel/helper-optimise-call-expression](https://babeljs.io/docs/en/babel-helper-optimise-call-expression) for more information.
+See our website [@babel/helpers](https://babeljs.io/docs/en/babel-helpers) for more information.
 
 ## Install
 
 Using npm:
 
 ```sh
-npm install --save @babel/helper-optimise-call-expression
+npm install --save-dev @babel/helpers
 ```
 
 or using yarn:
 
 ```sh
-yarn add @babel/helper-optimise-call-expression
+yarn add @babel/helpers --dev
 ```
