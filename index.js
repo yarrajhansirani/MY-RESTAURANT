@@ -3,57 +3,34 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
-exports.requeueComputedKeyAndDecorators = requeueComputedKeyAndDecorators;
-exports.skipAllButComputedKey = skipAllButComputedKey;
+exports.default = optimiseCallExpression;
 
-function skipAllButComputedKey(path) {
-  path.skip();
+var _t = require("@babel/types");
 
-  if (path.node.computed) {
-    path.context.maybeQueue(path.get("key"));
+const {
+  callExpression,
+  identifier,
+  isIdentifier,
+  isSpreadElement,
+  memberExpression,
+  optionalCallExpression,
+  optionalMemberExpression
+} = _t;
+
+function optimiseCallExpression(callee, thisNode, args, optional) {
+  if (args.length === 1 && isSpreadElement(args[0]) && isIdentifier(args[0].argument, {
+    name: "arguments"
+  })) {
+    if (optional) {
+      return optionalCallExpression(optionalMemberExpression(callee, identifier("apply"), false, true), [thisNode, args[0].argument], false);
+    }
+
+    return callExpression(memberExpression(callee, identifier("apply")), [thisNode, args[0].argument]);
+  } else {
+    if (optional) {
+      return optionalCallExpression(optionalMemberExpression(callee, identifier("call"), false, true), [thisNode, ...args], false);
+    }
+
+    return callExpression(memberExpression(callee, identifier("call")), [thisNode, ...args]);
   }
 }
-
-function requeueComputedKeyAndDecorators(path) {
-  const {
-    context,
-    node
-  } = path;
-
-  if (node.computed) {
-    context.maybeQueue(path.get("key"));
-  }
-
-  if (node.decorators) {
-    for (const decorator of path.get("decorators")) {
-      context.maybeQueue(decorator);
-    }
-  }
-}
-
-const visitor = {
-  FunctionParent(path) {
-    if (path.isArrowFunctionExpression()) {
-      return;
-    } else {
-      path.skip();
-
-      if (path.isMethod()) {
-        requeueComputedKeyAndDecorators(path);
-      }
-    }
-  },
-
-  Property(path) {
-    if (path.isObjectProperty()) {
-      return;
-    }
-
-    path.skip();
-    requeueComputedKeyAndDecorators(path);
-  }
-
-};
-var _default = visitor;
-exports.default = _default;

@@ -1,25 +1,24 @@
 {
-  "name": "@babel/helper-environment-visitor",
-  "version": "7.18.9",
-  "description": "Helper visitor to only visit nodes in the current 'this' context",
+  "name": "@babel/helper-optimise-call-expression",
+  "version": "7.18.6",
+  "description": "Helper function to optimise call expression",
   "repository": {
     "type": "git",
     "url": "https://github.com/babel/babel.git",
-    "directory": "packages/babel-helper-environment-visitor"
+    "directory": "packages/babel-helper-optimise-call-expression"
   },
-  "homepage": "https://babel.dev/docs/en/next/babel-helper-environment-visitor",
+  "homepage": "https://babel.dev/docs/en/next/babel-helper-optimise-call-expression",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "main": "./lib/index.js",
-  "exports": {
-    ".": "./lib/index.js",
-    "./package.json": "./package.json"
+  "dependencies": {
+    "@babel/types": "^7.18.6"
   },
   "devDependencies": {
-    "@babel/traverse": "^7.18.9",
-    "@babel/types": "^7.18.9"
+    "@babel/generator": "^7.18.6",
+    "@babel/parser": "^7.18.6"
   },
   "engines": {
     "node": ">=6.9.0"
