@@ -1,35 +1,22 @@
-import type { SourceMapSegment } from './sourcemap-segment';
-export interface SourceMapV3 {
-    file?: string | null;
-    names: readonly string[];
-    sourceRoot?: string;
-    sources: readonly (string | null)[];
-    sourcesContent?: readonly (string | null)[];
-    version: 3;
+export interface ProcessCov {
+    result: ScriptCov[];
 }
-export interface EncodedSourceMap extends SourceMapV3 {
-    mappings: string;
+export interface ScriptCov {
+    scriptId: string;
+    url: string;
+    functions: FunctionCov[];
 }
-export interface DecodedSourceMap extends SourceMapV3 {
-    mappings: readonly SourceMapSegment[][];
+export interface FunctionCov {
+    functionName: string;
+    ranges: RangeCov[];
+    isBlockCoverage: boolean;
 }
-export interface Pos {
-    line: number;
-    column: number;
+export interface Range {
+    readonly start: number;
+    readonly end: number;
 }
-export declare type Mapping = {
-    generated: Pos;
-    source: undefined;
-    original: undefined;
-    name: undefined;
-} | {
-    generated: Pos;
-    source: string;
-    original: Pos;
-    name: string;
-} | {
-    generated: Pos;
-    source: string;
-    original: Pos;
-    name: undefined;
-};
+export interface RangeCov {
+    startOffset: number;
+    endOffset: number;
+    count: number;
+}

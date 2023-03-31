@@ -1,19 +1,11 @@
-# @babel/traverse
+# V8 Coverage
 
-> The Babel Traverse module maintains the overall tree state, and is responsible for replacing, removing, and adding nodes
+[![npm](https://img.shields.io/npm/v/@c88/v8-coverage.svg?maxAge=2592000)](https://www.npmjs.com/package/@c88/v8-coverage)
+[![GitHub repository](https://img.shields.io/badge/Github-demurgos%2Fv8--coverage-blue.svg)](https://github.com/demurgos/v8-coverage)
+[![Build status (Travis)](https://img.shields.io/travis/demurgos/v8-coverage/master.svg?maxAge=2592000)](https://travis-ci.org/demurgos/v8-coverage)
+[![Build status (AppVeyor)](https://ci.appveyor.com/api/projects/status/qgcbdffyb9e09d0e?svg=true)](https://ci.appveyor.com/project/demurgos/v8-coverage)
+[![Codecov](https://codecov.io/gh/demurgos/v8-coverage/branch/master/graph/badge.svg)](https://codecov.io/gh/demurgos/v8-coverage)
 
-See our website [@babel/traverse](https://babeljs.io/docs/en/babel-traverse) for more information or the [issues](https://github.com/babel/babel/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3A%22pkg%3A%20traverse%22+is%3Aopen) associated with this package.
+## License
 
-## Install
-
-Using npm:
-
-```sh
-npm install --save-dev @babel/traverse
-```
-
-or using yarn:
-
-```sh
-yarn add @babel/traverse --dev
-```
+[MIT License](./LICENSE.md)
