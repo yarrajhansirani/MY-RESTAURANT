@@ -1,82 +1,57 @@
-# PostCSS Text Decoration Shorthand [<img src="https://postcss.github.io/postcss/logo.svg" alt="PostCSS Logo" width="90" height="90" align="right">][postcss]
+# Selector Specificity
 
-[<img alt="npm version" src="https://img.shields.io/npm/v/@csstools/postcss-text-decoration-shorthand.svg" height="20">][npm-url] [<img alt="CSS Standard Status" src="https://cssdb.org/images/badges/text-decoration-shorthand.svg" height="20">][css-url] [<img alt="Build Status" src="https://github.com/csstools/postcss-plugins/workflows/test/badge.svg" height="20">][cli-url] [<img alt="Discord" src="https://shields.io/badge/Discord-5865F2?logo=discord&logoColor=white">][discord]
-
-[PostCSS Text Decoration Shorthand] lets you use `text-decoration` as a shorthand following the [Text Decoration Specification].
-
-```pcss
-.example {
-	text-decoration: wavy underline purple 25%;
-}
-
-/* becomes */
-
-.example {
-	text-decoration: underline;
-	text-decoration: underline wavy purple;
-	text-decoration-thickness: calc(0.01em * 25);
-}
-```
+[<img alt="npm version" src="https://img.shields.io/npm/v/@csstools/selector-specificity.svg" height="20">][npm-url]
+[<img alt="Build Status" src="https://github.com/csstools/postcss-plugins/workflows/test/badge.svg" height="20">][cli-url]
+[<img alt="Discord" src="https://shields.io/badge/Discord-5865F2?logo=discord&logoColor=white">][discord]
 
 ## Usage
 
-Add [PostCSS Text Decoration Shorthand] to your project:
+Add [Selector Specificity] to your project:
 
 ```bash
-npm install postcss @csstools/postcss-text-decoration-shorthand --save-dev
+npm install postcss @csstools/selector-specificity --save-dev
 ```
-
-Use it as a [PostCSS] plugin:
 
 ```js
-const postcss = require('postcss');
-const postcssTextDecorationShorthand = require('@csstools/postcss-text-decoration-shorthand');
+import parser from 'postcss-selector-parser';
+import { selectorSpecificity } from '@csstools/selector-specificity';
 
-postcss([
-	postcssTextDecorationShorthand(/* pluginOptions */)
-]).process(YOUR_CSS /*, processOptions */);
+const selectorAST = parser().astSync('#foo:has(> .foo)');
+const specificity = selectorSpecificity(selectorAST);
+
+console.log(specificity.a); // 1
+console.log(specificity.b); // 1
+console.log(specificity.c); // 0
 ```
 
-[PostCSS Text Decoration Shorthand] runs in all Node environments, with special
-instructions for:
+_`selectorSpecificity` takes a single selector, not a list of selectors (not : `a, b, c`).
+To compare or otherwise manipulate lists of selectors you need to call `selectorSpecificity` on each part._
 
-| [Node](INSTALL.md#node) | [PostCSS CLI](INSTALL.md#postcss-cli) | [Webpack](INSTALL.md#webpack) | [Create React App](INSTALL.md#create-react-app) | [Gulp](INSTALL.md#gulp) | [Grunt](INSTALL.md#grunt) |
-| --- | --- | --- | --- | --- | --- |
+### Comparing
 
-## Options
-
-### preserve
-
-The `preserve` option determines whether the original notation
-is preserved. By default, it is not preserved.
+The package exports a utility function to compare two specificities.
 
 ```js
-postcssTextDecorationShorthand({ preserve: true })
+import { selectorSpecificity, compare } from '@csstools/selector-specificity';
+
+const s1 = selectorSpecificity(ast1);
+const s2 = selectorSpecificity(ast2);
+compare(s1, s2); // -1 | 0 | 1
 ```
 
-```pcss
-.example {
-	text-decoration: wavy underline purple 25%;
-}
+- if `s1 < s2` then `compare(s1, s2)` returns a negative number (`< 0`)
+- if `s1 > s2` then `compare(s1, s2)` returns a positive number (`> 0`)
+- if `s1 === s2` then `compare(s1, s2)` returns zero (`=== 0`)
 
-/* becomes */
+## Prior Art
 
-.example {
-	text-decoration: underline;
-	text-decoration: underline wavy purple;
-	text-decoration-thickness: calc(0.01em * 25);
-	text-decoration: wavy underline purple 25%;
-}
-```
+- [keeganstreet/specificity](https://github.com/keeganstreet/specificity)
+- [bramus/specificity](https://github.com/bramus/specificity)
+
+For CSSTools we always use `postcss-selector-parser` and want to calculate specificity from this AST.
 
 [cli-url]: https://github.com/csstools/postcss-plugins/actions/workflows/test.yml?query=workflow/test
-[css-url]: https://cssdb.org/#text-decoration-shorthand
 [discord]: https://discord.gg/bUadyRwkJS
-[npm-url]: https://www.npmjs.com/package/@csstools/postcss-text-decoration-shorthand
+[npm-url]: https://www.npmjs.com/package/@csstools/selector-specificity
 
-[Gulp PostCSS]: https://github.com/postcss/gulp-postcss
-[Grunt PostCSS]: https://github.com/nDmitry/grunt-postcss
-[PostCSS]: https://github.com/postcss/postcss
-[PostCSS Loader]: https://github.com/postcss/postcss-loader
-[PostCSS Text Decoration Shorthand]: https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-text-decoration-shorthand
-[Text Decoration Specification]: https://drafts.csswg.org/css-text-decor-4/#text-decoration-property
+[Selector Specificity]: https://github.com/csstools/postcss-plugins/tree/main/packages/selector-specificity
