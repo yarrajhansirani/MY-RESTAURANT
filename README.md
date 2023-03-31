@@ -1,19 +1,19 @@
-# @babel/plugin-proposal-json-strings
+# @babel/plugin-proposal-private-property-in-object
 
-> Escape U+2028 LINE SEPARATOR and U+2029 PARAGRAPH SEPARATOR in JS strings
+> This plugin transforms checks for a private property in an object
 
-See our website [@babel/plugin-proposal-json-strings](https://babeljs.io/docs/en/babel-plugin-proposal-json-strings) for more information.
+See our website [@babel/plugin-proposal-private-property-in-object](https://babeljs.io/docs/en/babel-plugin-proposal-private-property-in-object) for more information.
 
 ## Install
 
 Using npm:
 
 ```sh
-npm install --save-dev @babel/plugin-proposal-json-strings
+npm install --save-dev @babel/plugin-proposal-private-property-in-object
 ```
 
 or using yarn:
 
 ```sh
-yarn add @babel/plugin-proposal-json-strings --dev
+yarn add @babel/plugin-proposal-private-property-in-object --dev
 ```
