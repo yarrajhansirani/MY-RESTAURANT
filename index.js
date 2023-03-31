@@ -3,242 +3,90 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DEFAULT_EXTENSIONS = void 0;
-Object.defineProperty(exports, "File", {
-  enumerable: true,
-  get: function () {
-    return _file.default;
+exports.CodeGenerator = void 0;
+exports.default = generate;
+var _sourceMap = require("./source-map");
+var _printer = require("./printer");
+class Generator extends _printer.default {
+  constructor(ast, opts = {}, code) {
+    const format = normalizeOptions(code, opts);
+    const map = opts.sourceMaps ? new _sourceMap.default(opts, code) : null;
+    super(format, map);
+    this.ast = void 0;
+    this.ast = ast;
   }
-});
-exports.OptionManager = void 0;
-exports.Plugin = Plugin;
-Object.defineProperty(exports, "buildExternalHelpers", {
-  enumerable: true,
-  get: function () {
-    return _buildExternalHelpers.default;
+  generate() {
+    return super.generate(this.ast);
   }
-});
-Object.defineProperty(exports, "createConfigItem", {
-  enumerable: true,
-  get: function () {
-    return _config.createConfigItem;
-  }
-});
-Object.defineProperty(exports, "createConfigItemAsync", {
-  enumerable: true,
-  get: function () {
-    return _config.createConfigItemAsync;
-  }
-});
-Object.defineProperty(exports, "createConfigItemSync", {
-  enumerable: true,
-  get: function () {
-    return _config.createConfigItemSync;
-  }
-});
-Object.defineProperty(exports, "getEnv", {
-  enumerable: true,
-  get: function () {
-    return _environment.getEnv;
-  }
-});
-Object.defineProperty(exports, "loadOptions", {
-  enumerable: true,
-  get: function () {
-    return _config.loadOptions;
-  }
-});
-Object.defineProperty(exports, "loadOptionsAsync", {
-  enumerable: true,
-  get: function () {
-    return _config.loadOptionsAsync;
-  }
-});
-Object.defineProperty(exports, "loadOptionsSync", {
-  enumerable: true,
-  get: function () {
-    return _config.loadOptionsSync;
-  }
-});
-Object.defineProperty(exports, "loadPartialConfig", {
-  enumerable: true,
-  get: function () {
-    return _config.loadPartialConfig;
-  }
-});
-Object.defineProperty(exports, "loadPartialConfigAsync", {
-  enumerable: true,
-  get: function () {
-    return _config.loadPartialConfigAsync;
-  }
-});
-Object.defineProperty(exports, "loadPartialConfigSync", {
-  enumerable: true,
-  get: function () {
-    return _config.loadPartialConfigSync;
-  }
-});
-Object.defineProperty(exports, "parse", {
-  enumerable: true,
-  get: function () {
-    return _parse.parse;
-  }
-});
-Object.defineProperty(exports, "parseAsync", {
-  enumerable: true,
-  get: function () {
-    return _parse.parseAsync;
-  }
-});
-Object.defineProperty(exports, "parseSync", {
-  enumerable: true,
-  get: function () {
-    return _parse.parseSync;
-  }
-});
-Object.defineProperty(exports, "resolvePlugin", {
-  enumerable: true,
-  get: function () {
-    return _files.resolvePlugin;
-  }
-});
-Object.defineProperty(exports, "resolvePreset", {
-  enumerable: true,
-  get: function () {
-    return _files.resolvePreset;
-  }
-});
-Object.defineProperty((0, exports), "template", {
-  enumerable: true,
-  get: function () {
-    return _template().default;
-  }
-});
-Object.defineProperty((0, exports), "tokTypes", {
-  enumerable: true,
-  get: function () {
-    return _parser().tokTypes;
-  }
-});
-Object.defineProperty(exports, "transform", {
-  enumerable: true,
-  get: function () {
-    return _transform.transform;
-  }
-});
-Object.defineProperty(exports, "transformAsync", {
-  enumerable: true,
-  get: function () {
-    return _transform.transformAsync;
-  }
-});
-Object.defineProperty(exports, "transformFile", {
-  enumerable: true,
-  get: function () {
-    return _transformFile.transformFile;
-  }
-});
-Object.defineProperty(exports, "transformFileAsync", {
-  enumerable: true,
-  get: function () {
-    return _transformFile.transformFileAsync;
-  }
-});
-Object.defineProperty(exports, "transformFileSync", {
-  enumerable: true,
-  get: function () {
-    return _transformFile.transformFileSync;
-  }
-});
-Object.defineProperty(exports, "transformFromAst", {
-  enumerable: true,
-  get: function () {
-    return _transformAst.transformFromAst;
-  }
-});
-Object.defineProperty(exports, "transformFromAstAsync", {
-  enumerable: true,
-  get: function () {
-    return _transformAst.transformFromAstAsync;
-  }
-});
-Object.defineProperty(exports, "transformFromAstSync", {
-  enumerable: true,
-  get: function () {
-    return _transformAst.transformFromAstSync;
-  }
-});
-Object.defineProperty(exports, "transformSync", {
-  enumerable: true,
-  get: function () {
-    return _transform.transformSync;
-  }
-});
-Object.defineProperty((0, exports), "traverse", {
-  enumerable: true,
-  get: function () {
-    return _traverse().default;
-  }
-});
-exports.version = exports.types = void 0;
-var _file = require("./transformation/file/file");
-var _buildExternalHelpers = require("./tools/build-external-helpers");
-var _files = require("./config/files");
-var _environment = require("./config/helpers/environment");
-function _types() {
-  const data = require("@babel/types");
-  _types = function () {
-    return data;
+}
+function normalizeOptions(code, opts) {
+  const format = {
+    auxiliaryCommentBefore: opts.auxiliaryCommentBefore,
+    auxiliaryCommentAfter: opts.auxiliaryCommentAfter,
+    shouldPrintComment: opts.shouldPrintComment,
+    retainLines: opts.retainLines,
+    retainFunctionParens: opts.retainFunctionParens,
+    comments: opts.comments == null || opts.comments,
+    compact: opts.compact,
+    minified: opts.minified,
+    concise: opts.concise,
+    indent: {
+      adjustMultilineComment: true,
+      style: "  "
+    },
+    jsescOption: Object.assign({
+      quotes: "double",
+      wrap: true,
+      minimal: false
+    }, opts.jsescOption),
+    recordAndTupleSyntaxType: opts.recordAndTupleSyntaxType,
+    topicToken: opts.topicToken
   };
-  return data;
-}
-Object.defineProperty((0, exports), "types", {
-  enumerable: true,
-  get: function () {
-    return _types();
+  {
+    format.decoratorsBeforeExport = opts.decoratorsBeforeExport;
+    format.jsescOption.json = opts.jsonCompatibleStrings;
   }
-});
-function _parser() {
-  const data = require("@babel/parser");
-  _parser = function () {
-    return data;
-  };
-  return data;
+  if (format.minified) {
+    format.compact = true;
+    format.shouldPrintComment = format.shouldPrintComment || (() => format.comments);
+  } else {
+    format.shouldPrintComment = format.shouldPrintComment || (value => format.comments || value.includes("@license") || value.includes("@preserve"));
+  }
+  if (format.compact === "auto") {
+    format.compact = typeof code === "string" && code.length > 500000;
+    if (format.compact) {
+      console.error("[BABEL] Note: The code generator has deoptimised the styling of " + `${opts.filename} as it exceeds the max of ${"500KB"}.`);
+    }
+  }
+  if (format.compact) {
+    format.indent.adjustMultilineComment = false;
+  }
+  const {
+    auxiliaryCommentBefore,
+    auxiliaryCommentAfter,
+    shouldPrintComment
+  } = format;
+  if (auxiliaryCommentBefore && !shouldPrintComment(auxiliaryCommentBefore)) {
+    format.auxiliaryCommentBefore = undefined;
+  }
+  if (auxiliaryCommentAfter && !shouldPrintComment(auxiliaryCommentAfter)) {
+    format.auxiliaryCommentAfter = undefined;
+  }
+  return format;
 }
-function _traverse() {
-  const data = require("@babel/traverse");
-  _traverse = function () {
-    return data;
-  };
-  return data;
-}
-function _template() {
-  const data = require("@babel/template");
-  _template = function () {
-    return data;
-  };
-  return data;
-}
-var _config = require("./config");
-var _transform = require("./transform");
-var _transformFile = require("./transform-file");
-var _transformAst = require("./transform-ast");
-var _parse = require("./parse");
-var thisFile = require("./index");
-const version = "7.21.4";
-exports.version = version;
-const DEFAULT_EXTENSIONS = Object.freeze([".js", ".jsx", ".es6", ".es", ".mjs", ".cjs"]);
-exports.DEFAULT_EXTENSIONS = DEFAULT_EXTENSIONS;
-class OptionManager {
-  init(opts) {
-    return (0, _config.loadOptionsSync)(opts);
+class CodeGenerator {
+  constructor(ast, opts, code) {
+    this._generator = void 0;
+    this._generator = new Generator(ast, opts, code);
+  }
+  generate() {
+    return this._generator.generate();
   }
 }
-exports.OptionManager = OptionManager;
-function Plugin(alias) {
-  throw new Error(`The (${alias}) Babel 5 plugin is being run with an unsupported Babel version.`);
+exports.CodeGenerator = CodeGenerator;
+function generate(ast, opts, code) {
+  const gen = new Generator(ast, opts, code);
+  return gen.generate();
 }
-;
-0 && (exports.types = exports.traverse = exports.tokTypes = exports.template = 0);
 
 //# sourceMappingURL=index.js.map
